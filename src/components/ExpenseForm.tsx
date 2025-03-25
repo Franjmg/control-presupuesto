@@ -17,14 +17,16 @@ export default function ExpenseForm() {
     })
 
     const [error, setError] = useState<string>('');
-    const { dispatch, state } = useBudget();
+    const [previousAmount, setPreviousAmount] = useState<number>(0);
+    const { dispatch, state, remainingBudget } = useBudget();
 
     useEffect(() => {
         if(state.editingId){
             const expenseToEdit = state.expenses.filter(currentExpense => currentExpense.id === state.editingId)[0]
             setExpense(expenseToEdit);
+            setPreviousAmount(expenseToEdit.amount);
         }
-    },[state.editingId])
+    },[state.editingId, state.expenses])
 
     const handleChange = (e : React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -49,6 +51,11 @@ export default function ExpenseForm() {
             setError('Todos los campos son obligatorios');
             return;
         }
+        //Validar que no supere el presupuesto
+        if( (expense.amount - previousAmount) > remainingBudget) {
+            setError('No puedes superar el presupuesto');
+            return;
+        }
         //Agregar o Actualizar
         if(state.editingId) {
             dispatch({ type: 'UPDATE_EXPENSE', payload: {expense: {id: state.editingId, ...expense}} })
@@ -62,6 +69,7 @@ export default function ExpenseForm() {
             category: '',
             date: new Date()
         })
+        setPreviousAmount(0)
     }
 
   return (
