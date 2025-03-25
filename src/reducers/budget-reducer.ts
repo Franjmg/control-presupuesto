@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { DraftExpense, Expense } from "../types"
+import { Category, DraftExpense, Expense } from "../types"
 
 export type BudgetAction = 
     { type: 'ADD_BUDGET', payload: {budget: number} } |
@@ -8,13 +8,15 @@ export type BudgetAction =
     { type: 'REMOVE_EXPENSE', payload: {id: Expense['id']} } |
     { type: 'EDIT_EXPENSE', payload: {id: Expense['id']} } |
     { type: 'UPDATE_EXPENSE', payload: {expense: Expense} } |
-    { type: 'RESET-APP' }
+    { type: 'RESET-APP' } |
+    { type: 'ADD-FILTER-CATEGORY', payload: {id: Category['id']} } 
 
 export type BudgetState = {
     budget: number
     modal: boolean
     expenses: Expense[]
     editingId: Expense['id']
+    currentCategory: Category['id']
 }
 
 const initialBudget = () : number => {
@@ -31,7 +33,8 @@ export const initialState : BudgetState = {
     budget: initialBudget(),
     modal: false,
     expenses: localStorageExpense(),
-    editingId: ''
+    editingId: '',
+    currentCategory: ''
 }
 
 const createExpense = (draftExpense: DraftExpense) : Expense => {
@@ -102,6 +105,13 @@ export const budgetReducer = (
             ...state,
             budget: 0,
             expenses: []
+        }
+    }
+
+    if (action.type === 'ADD-FILTER-CATEGORY') {
+        return {
+            ...state,
+            currentCategory: action.payload.id
         }
     }
 
