@@ -7,7 +7,8 @@ export type BudgetAction =
     { type: 'ADD_EXPENSE', payload: {expense: DraftExpense} } |
     { type: 'REMOVE_EXPENSE', payload: {id: Expense['id']} } |
     { type: 'EDIT_EXPENSE', payload: {id: Expense['id']} } |
-    { type: 'UPDATE_EXPENSE', payload: {expense: Expense} }
+    { type: 'UPDATE_EXPENSE', payload: {expense: Expense} } |
+    { type: 'RESET-APP' }
 
 export type BudgetState = {
     budget: number
@@ -93,6 +94,14 @@ export const budgetReducer = (
             modal: false,
             editingId: ''
 
+        }
+    }
+
+    if (action.type === 'RESET-APP') {
+        return {
+            ...state,
+            budget: 0,
+            expenses: []
         }
     }
 
